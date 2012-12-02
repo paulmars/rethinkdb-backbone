@@ -1,59 +1,61 @@
-# setup connection (function not included atm)
-setupConnection ->
+Backbone = require 'backbone'
 
-  # setup model
-  UserModel = Backbone.Model.extend({
-    localStorage: new Backbone.RethinkStorage(),
+rethinkDbStore = require './rethinkDbStore'
+rethinkDbStore.set(Backbone)
 
-    defaults:
-      name: no
+# setup model
+UserModel = Backbone.Model.extend({
+  localStorage: new Backbone.RethinkStorage(),
 
-    validate: (attrs) ->
-      unless attrs.subdomain?
-        "must have subdomain"
-  })
+  defaults:
+    name: no
 
-  # Find all example
-  Users = Backbone.Collection.extend({
-    model: UserModel,
-    localStorage: new Backbone.RethinkStorage(),
-  })
+  validate: (attrs) ->
+    unless attrs.subdomain?
+      "must have subdomain"
+})
 
-  UserSet = new Users()
-  UserSet.fetch(
-    # callbacks
-  )
+# Find all example
+Users = Backbone.Collection.extend({
+  model: UserModel,
+  localStorage: new Backbone.RethinkStorage(),
+})
 
-  # Get one record
-  idOfRecordInDatabase = "f2581772-8cde-4f94-9aa1-3cc6c17324de"
-  oldRecord = new UserModel({ id: idOfRecordInDatabase})
-  oldRecord.fetch(
-    # callbacks
-  )
+UserSet = new Users()
+UserSet.fetch(
+  # callbacks
+)
 
-  # Create new record
-  paul = new UserModel({
-    name: "Paul",
-    what: "444444444",
-  })
+# Get one record
+idOfRecordInDatabase = "f2581772-8cde-4f94-9aa1-3cc6c17324de"
+oldRecord = new UserModel({ id: idOfRecordInDatabase})
+oldRecord.fetch(
+  # callbacks
+)
 
-  # Save with callbacks
-  paul.save(
-    # Parameters
-    {name: "PM"},
+# Create new record
+paul = new UserModel({
+  name: "Paul",
+  what: "444444444",
+})
 
-    # Callbacks
-    {
-      success: (resp) ->
+# Save with callbacks
+paul.save(
+  # Parameters
+  {name: "PM"},
 
-        # Update record in success callback
-        paul.set({"name": "paul"})
-        paul.save()
+  # Callbacks
+  {
+    success: (resp) ->
 
-        paul.destroy()
+      # Update record in success callback
+      paul.set({"name": "paul"})
+      paul.save()
 
-      error: (model, response, options) ->
-        console.log("Callback for save: Errored")
-    }
-  )
+      paul.destroy()
+
+    error: (model, response, options) ->
+      console.log("Callback for save: Errored")
+  }
+)
 
